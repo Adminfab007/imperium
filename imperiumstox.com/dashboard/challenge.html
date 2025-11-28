@@ -4748,121 +4748,358 @@ body {
 
 <!-- Your JS -->
 <script>
-let currentUser = {};
-const challenges = [
-  { id: 1, accountSize: 10000, profitTarget: 1000, price: 50, country: "US" },
-  { id: 2, accountSize: 5000, profitTarget: 500, price: 25, country: "UK" },
-  { id: 3, accountSize: 20000, profitTarget: 2000, price: 100, country: "DE" }
-];
+    async function fetchUserInfo() {
+                               var parsedData = localStorage.getItem('user')
+                               var userFromLS = JSON.parse((parsedData))
+                   
+                               console.log(userFromLS);
+                   
+                               const response = await $.ajax({
+                                   type: "GET",
+                                   url: `https://stoxphere-render.onrender.com/users/${userFromLS.email}`,
+                                   dataType: "json",
+                                   timeout: 30000,
+                                   success: async function (data) {
+                                       Object.assign(currentUser, data.data)
+                                       await localStorage.setItem("user", JSON.stringify(data.data))
+                                   },
+                                   error: function () {
+                                       alert(error)
+                                   }
+                               });
+                   
+                               return response.data;
+                           }
+                   
+                           $(document).ready(async function () {
 
-// Simulate localStorage user if not exists
-if (!localStorage.getItem("user")) {
-  const demoUser = { _id: "user123", firstName: "Test", challengeBalance: 5000, challenges: [], challengeProfit: 0 };
-  localStorage.setItem("user", JSON.stringify(demoUser));
-}
+                            
 
-let user = JSON.parse(localStorage.getItem("user"));
+                            })
+ 
+    // ✅ Simulate localStorage user
+    if (!localStorage.getItem("user")) {
+      const demoUser = {
+        id: "user123",
+        firstName: "Test",
+        challengeBalance: 5000,
+      };
+      localStorage.setItem("user", JSON.stringify(demoUser));
+    }
 
-function renderBalance() {
-  document.getElementById("challengeBalanceBox").innerHTML = `<i class="fa-solid fa-coins me-2 text-warning"></i> Challenge Balance: $${user.challengeBalance}`;
-}
+    let user = JSON.parse(localStorage.getItem("user"));
 
-function renderChallenges() {
-  const challengesList = document.getElementById("challengesList");
-  challengesList.innerHTML = "";
-  challenges.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "col-12 col-md-6 col-lg-4";
-    div.innerHTML = `
-      <div class="card challenge-card p-4 h-100">
-        <h4>${c.country} Challenge</h4>
-        <p><strong>Account Size:</strong> $${c.accountSize}</p>
-        <p><strong>Profit Target:</strong> $${c.profitTarget}</p>
-        <p><strong>Price:</strong> $${c.price}</p>
-        <button class="btn btn-custom mt-2" onclick="joinChallenge(${c.id})">
-          <i class="fa-solid fa-door-open"></i> Join Challenge
-        </button>
-      </div>
-    `;
-    challengesList.appendChild(div);
-  });
-}
+    const challenges = [
+      {
+        id: 1,
+        title: "Challenge 1",
+        entryFee: 1000,
+        duration: 30,
+        expectedProfitRate: "80%",
+        minProfit: 10000,
+        reward: "x2 (double your profit)",
+        rewardValue: 20000
+      },
+      {
+        id: 2,
+        title: "Challenge 2",
+        entryFee: 2000,
+        duration: 45,
+        expectedProfitRate: "60%",
+        minProfit: 1500,
+        reward: "$12,000 fixed reward",
+        rewardValue: 12000
+      }
+    ];
 
-function renderMyChallenges() {
-  const myList = document.getElementById("myChallenges");
-  myList.innerHTML = "";
-  user.challenges.forEach(mc => {
-    const progressPercent = Math.min((user.challengeProfit / mc.profitTarget) * 100, 100).toFixed(1);
-    const div = document.createElement("div");
-    div.className = "col-12 col-md-6 col-lg-4";
-    div.innerHTML = `
-      <div class="card my-challenge-card p-4 h-100">
-        <h4>${mc.country} Challenge</h4>
-        <p><strong>Progress:</strong> $${user.challengeProfit} / $${mc.profitTarget}</p>
-        <div class="progress mb-2">
-          <div class="progress-bar bg-success" role="progressbar" style="width: ${progressPercent}%">
-            ${progressPercent}%
+    let myChallenges = [];
+
+    function renderBalance() {
+      document.getElementById("challengeBalanceBox").innerText =
+        `Challenge Balance: $${user.challengeBalance}`;
+    }
+
+    function renderChallenges() {
+      const challengesList = document.getElementById("challengesList");
+      challengesList.innerHTML = "";
+
+      challenges.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "col-12 col-md-6 col-lg-4";
+        div.innerHTML = `
+          <div class="card p-4 h-100">
+            <h4>${c.title}</h4>
+            <p><strong>Tution Fee:</strong> $${c.entryFee}</p>
+            <p><strong>Duration:</strong> ${c.duration} days</p>
+            <p><strong>Expected Win Rate:</strong> ${c.expectedProfitRate}</p>
+            <p><strong>Minimum Profit:</strong> $${c.minProfit}</p>
+            <p><strong>Reward:</strong> ${c.reward}</p>
+            <button class="btn btn-custom mt-2" onclick="joinChallenge(${c.id})">
+              <i class="fa-solid fa-door-open"></i> Join Challenge
+            </button>
           </div>
-        </div>
-        <p><strong>Days Left:</strong> ${mc.duration}</p>
-        <button class="btn btn-success mt-2" onclick="claimReward(${mc.id})" ${user.challengeProfit < mc.profitTarget ? "disabled" : ""}>
-          <i class="fa-solid fa-trophy"></i> Claim Reward
-        </button>
-      </div>
-    `;
-    myList.appendChild(div);
-  });
-}
+        `;
+        challengesList.appendChild(div);
+      });
+    }
 
-function joinChallenge(id) {
+    function renderMyChallenges() {
+      const myList = document.getElementById("myChallenges");
+      myList.innerHTML = "";
+var user=JSON.parse(localStorage.getItem("user"))
+      user.challenges.forEach(mc => {
+        const progressPercent = Math.min(
+          (user.challengeProfit / eval(mc.minProfit)) * 100,
+          100
+        ).toFixed(1);
+console.log(mc._id);
+var enc=encodeURIComponent(mc._id)
+
+        const div = document.createElement("div");
+        div.className = "col-12 col-md-6 col-lg-4";
+        div.innerHTML = `
+          <div class="card p-4 h-100">
+            <h4>${mc.title}</h4>
+            <p><strong>Progress:</strong> $${user.challengeProfit} / $${eval(mc.minProfit)}</p>
+            <div class="progress mb-2">
+              <div class="progress-bar bg-success" role="progressbar" style="width: ${progressPercent}%">
+                ${progressPercent}%
+              </div>
+            </div>
+            <p><strong>Days Left:</strong> ${mc.daysLeft}</p>
+           <button 
+  class="btn btn-success mt-2" 
+  onclick="claimReward('${mc._id}')"
+  ${user.challengeProfit < mc.minProfit ? "disabled" : ""}>
+  <i class="fa-solid fa-trophy"></i> Claim Reward
+</button>
+
+          </div>
+        `;
+        myList.appendChild(div);
+      });
+    }
+
+   function joinChallenge(id) {
   const challenge = challenges.find(c => c.id === id);
   if (!challenge) return;
 
-  if (user.challengeBalance < challenge.price) {
+  // Check challenge balance locally
+  if (user.challengeBalance < challenge.entryFee) {
     Swal.fire("Insufficient Balance", "Please fund your challenge balance.", "error");
     return;
   }
 
-  user.challengeBalance -= challenge.price;
-  const joinedChallenge = { ...challenge, joinedAt: new Date() };
-  user.challenges.push(joinedChallenge);
+  // Deduct Tution Fee locally
+  user.challengeBalance -= challenge.entryFee;
   localStorage.setItem("user", JSON.stringify(user));
   renderBalance();
-  renderMyChallenges();
-  Swal.fire("Joined!", `You successfully joined ${challenge.country} Challenge.`, "success");
+
+  // Add challenge to local active list
+  const joinedChallenge = {
+    ...challenge,
+    profit: 0,
+    daysLeft: challenge.duration,
+    joinedAt: new Date(),
+    rewardClaimed: false
+  };
+
+  myChallenges.push(joinedChallenge);
+  console.log(myChallenges);
+  
+
+  // ✅ Send to backend
+  $.ajax({
+    url: `https://stoxphere-render.onrender.com/transactions/users/${user._id}/challenges/join`, 
+    type: "POST",
+    data: JSON.stringify({ challenge: joinedChallenge }),
+    contentType: "application/json",
+    success: function (res) {
+      // Update user object with response from server
+      user = res.user;
+      localStorage.setItem("user", JSON.stringify(user));
+
+      Swal.fire("Joined!", `You successfully joined ${challenge.title}`, "success");
+      renderMyChallenges();
+    },
+    error: function (xhr) {
+        console.log(xhr.responseJSON?.error);
+        
+      Swal.fire("Error", xhr.responseJSON?.error || "Something went wrong", "error");
+    }
+  });
 }
 
-function claimReward(id) {
-  Swal.fire("Reward Claimed!", "You have successfully claimed your reward.", "success");
+
+  async function claimReward(id) {
+  try {
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    if (!user._id) {
+      return Swal.fire("Error", "User not found. Please log in again.", "error");
+    }
+
+    // Call backend API
+    const response = await $.ajax({
+      type: "POST",
+      url: `https://stoxphere-render.onrender.com/transactions/users/${user._id}/challenges/${id}/claim`,
+      contentType: "application/json",
+    });
+
+    // Success 🎉
+    Swal.fire("Reward Claimed!", response.message, "success");
+
+    // Update user balance locally
+    user.challengeBalance = response.balance;
+
+    // 🔹 Remove the claimed challenge from local copy
+    user.challenges = (user.challenges || []).filter(c => c._id !== id);
+
+    // Save back to localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Optionally refresh UI (if you have a renderer)
+    if (typeof renderMyChallenges === "function") {
+      renderMyChallenges();
+    }
+
+  } catch (err) {
+    console.error("Claim reward failed:", err);
+    Swal.fire(
+      "Error",
+      err.responseJSON?.error || "Failed to claim reward. Try again later.",
+      "error"
+    );
+  }
 }
 
-function fundBalance() {
-  const amount = parseFloat(document.getElementById("fundAmount").value);
-  if (isNaN(amount) || amount <= 0) return Swal.fire("Invalid Amount", "Enter a valid amount.", "error");
-  user.challengeBalance += amount;
-  localStorage.setItem("user", JSON.stringify(user));
-  renderBalance();
-  bootstrap.Modal.getInstance(document.getElementById("fundModal")).hide();
-  Swal.fire("Success!", `Balance funded $${amount}`, "success");
-}
-
-function withdrawBalance() {
-  const amount = parseFloat(document.getElementById("withdrawAmount").value);
-  if (isNaN(amount) || amount <= 0 || amount > user.challengeBalance) return Swal.fire("Invalid Amount", "Check your balance.", "error");
-  user.challengeBalance -= amount;
-  localStorage.setItem("user", JSON.stringify(user));
-  renderBalance();
-  bootstrap.Modal.getInstance(document.getElementById("withdrawModal")).hide();
-  Swal.fire("Success!", `You withdrew $${amount}`, "success");
-}
-
-// Initialize
-renderBalance();
-renderChallenges();
-renderMyChallenges();
-</script>
 
 
+   async function fundBalance() {
+    const amount = parseFloat(document.getElementById("fundAmount").value);
+    const network = document.getElementById("networkSelect").value;
+    const walletAddress = document.getElementById("walletAddress").value;
+
+    if (isNaN(amount) || amount <= 0) {
+      Swal.fire("Invalid Amount", "Please enter a valid funding amount.", "error");
+      return;
+    }
+
+    if (!network) {
+      Swal.fire("No Network", "Please select a network.", "error");
+      return;
+    }
+
+    // get user from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      Swal.fire("Error", "User not found in local storage.", "error");
+      return;
+    }
+
+    // build deposit payload
+    const payload = {
+      method: network,
+      amount: amount,
+      from: user.firstName + " "+ user.lastName,       // ✅ the wallet user should pay to
+      to: user.email || user._id, // ✅ recipient (optional based on your schema)
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      // send to backend
+      const res = await fetch(`https://stoxphere-render.onrender.com/transactions/${user._id}/deposit/challenge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        Swal.fire("Success!", `Deposit request of $${amount} submitted. Pending confirmation.`, "success");
+        document.getElementById("fundAmount").value = "";
+        document.getElementById("networkSelect").value = "";
+        document.getElementById("walletBox").style.display = "none";
+
+        bootstrap.Modal.getInstance(document.getElementById("fundModal")).hide();
+
+        // update UI balances locally (optional)
+        user.challengeBalance += amount;
+        localStorage.setItem("user", JSON.stringify(user));
+        renderBalance();
+      } else {
+        Swal.fire("Error", data.message || "Deposit failed", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong. Try again later.", "error");
+    }
+  }
+   async function withdrawBalance() {
+    const amount = parseFloat(document.getElementById("withdrawAmount").value);
+    if (isNaN(amount) || amount <= 0) {
+      Swal.fire("Invalid Amount", "Please enter a valid withdrawal amount.", "error");
+      return;
+    }
+
+    // ✅ Check if user has enough challenge balance
+    if (amount > user.challengeBalance) {
+      Swal.fire("Insufficient Balance", "You do not have enough funds in your challenge balance.", "error");
+      return;
+    }
+
+    // ✅ Check if user has enough main balance for withdrawal fee (5%)
+    const fee = amount * 0.05;
+    if (user.balance < fee) {
+      Swal.fire("Insufficient Fee", "You need at least 5% of the withdrawal amount in your main balance to cover fees.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://stoxphere-render.onrender.com/transactions/${user._id}/withdrawal/challenge`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          method: "USDT",          // replace with selected option
+          address: "user_wallet",  // replace with actual wallet input
+          amount: amount,
+          from: user.email,
+          account: user.firstName + " " + user.lastName,
+          to: "Admin",
+          timestamp: Date.now()
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        Swal.fire("Error", result.message || "Withdrawal failed", "error");
+        return;
+      }
+
+      // ✅ Update balances locally
+      user.challengeBalance -= amount;
+      user.balance -= fee;
+      localStorage.setItem("user", JSON.stringify(user));
+      renderBalance();
+
+      Swal.fire("Conversion Successful!", `You withdrew $${amount}. Fee: $${fee.toFixed(2)}`, "success");
+
+      document.getElementById("withdrawAmount").value = "";
+      bootstrap.Modal.getInstance(document.getElementById("withdrawModal")).hide();
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Server error while processing withdrawal.", "error");
+    }
+  }
+
+    // ✅ Initialize
+    renderBalance();
+    renderChallenges();
+    renderMyChallenges();
+  </script>
 
 
 
