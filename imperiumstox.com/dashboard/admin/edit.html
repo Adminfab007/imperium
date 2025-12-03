@@ -9255,9 +9255,19 @@
                <li>
                 <a href="withdrawalrequests.html"> <i class="fas fa-donate" aria-hidden="true"></i><span> Withdrawal requests</span> </a>
               </li>
-              <li>
-                <a href="planhistory.html"> <i class="fas fa-donate" aria-hidden="true"></i><span> Subscription Plans</span> </a>
-              </li>
+                <li>
+    <a href="planhistory.html"><i class="fas fa-donate"></i> Subscription Plans</a>
+  </li>
+
+  <!-- Challenges Dropdown -->
+  <li class="has-sub">
+    <a href="javascript:;"><i class="fas fa-trophy"></i> Challenges</a>
+    <ul class="sub-menu">
+      <li><a href="activechallenges.html">Active Challenges</a></li>
+      <li><a href="depositschallenges.html">Deposits</a></li>
+      <li><a href="withdrawalchallenges.html">Withdrawals</a></li>
+    </ul>
+  </li>
               
             <!-- Add this within your HTML document -->
 
@@ -9710,7 +9720,7 @@
 
       const response = await $.ajax({
         type: "PUT",
-        url: ` https://stoxhaven-render-w08x.onrender.com/auth/${currentUser._id}/reset-password`,
+        url: `https://stoxhaven-render-w08x.onrender.com/auth/${currentUser._id}/reset-password`,
         dataType: "json",
         data: { password },
         timeout: 30000,

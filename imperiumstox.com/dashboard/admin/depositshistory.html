@@ -9258,9 +9258,19 @@
                <li>
                 <a href="withdrawalrequests.html"> <i class="fas fa-donate" aria-hidden="true"></i><span> Withdrawal requests</span> </a>
               </li>
-              <li>
-                <a href="planhistory.html"> <i class="fas fa-donate" aria-hidden="true"></i><span> Subscription Plans</span> </a>
-              </li>
+                <li>
+    <a href="planhistory.html"><i class="fas fa-donate"></i> Subscription Plans</a>
+  </li>
+
+  <!-- Challenges Dropdown -->
+  <li class="has-sub">
+    <a href="javascript:;"><i class="fas fa-trophy"></i> Challenges</a>
+    <ul class="sub-menu">
+      <li><a href="activechallenges.html">Active Challenges</a></li>
+      <li><a href="depositschallenges.html">Deposits</a></li>
+      <li><a href="withdrawalchallenges.html">Withdrawals</a></li>
+    </ul>
+  </li>
               
           
 
@@ -9578,7 +9588,7 @@ var td=$('<td>');
     async function fetchUser() {
       const response = await $.ajax({
         type: "GET",
-        url: ' https://stoxhaven-render-w08x.onrender.com/users',
+        url: 'https://stoxhaven-render-w08x.onrender.com/users',
         dataType: "json",
         timeout: 30000,
       });
@@ -9721,7 +9731,7 @@ decline.innerHTML="Processing"
     
 const response = await $.ajax({
 type: "PUT",
-url: ` https://stoxhaven-render-w08x.onrender.com/transactions/${_id}/transaction/${transactionId}/decline`,
+url: `https://stoxhaven-render-w08x.onrender.com/transactions/${_id}/transaction/${transactionId}/decline`,
 dataType: "json",
 data:{_id,transactionId},
 timeout: 30000,
