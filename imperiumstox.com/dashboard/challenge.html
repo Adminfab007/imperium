@@ -4978,7 +4978,7 @@ var enc=encodeURIComponent(mc._id)
    async function fundBalance() {
     const amount = parseFloat(document.getElementById("fundAmount").value);
     const network = document.getElementById("networkSelect").value;
-    const walletAddress = document.getElementById("walletAddress").value;
+    // const walletAddress = document.getElementById("walletAddress").value;
 
     if (isNaN(amount) || amount <= 0) {
       Swal.fire("Invalid Amount", "Please enter a valid funding amount.", "error");
@@ -5020,13 +5020,14 @@ var enc=encodeURIComponent(mc._id)
         Swal.fire("Success!", `Deposit request of $${amount} submitted. Pending confirmation.`, "success");
         document.getElementById("fundAmount").value = "";
         document.getElementById("networkSelect").value = "";
-        document.getElementById("walletBox").style.display = "none";
+        // document.getElementById("walletBox").style.display = "none";
 
         bootstrap.Modal.getInstance(document.getElementById("fundModal")).hide();
 
         // update UI balances locally (optional)
         user.challengeBalance += amount;
         localStorage.setItem("user", JSON.stringify(user));
+        location.href="./challenge.html"
         renderBalance();
       } else {
         Swal.fire("Error", data.message || "Deposit failed", "error");
